@@ -20,9 +20,7 @@ def main():
 
   project, account = bootstrapping.GetActiveProjectAndAccount()
   pass_credentials = properties.VALUES.core.pass_credentials_to_gsutil.GetBool()
-  # None means the value was unset, and we want to default to True.
-  if pass_credentials is None:
-    pass_credentials = True
+
   if pass_credentials and account not in c_gce.Metadata().Accounts():
     gsutil_path = config.Paths().LegacyCredentialsGSUtilPath(account)
 
@@ -61,7 +59,6 @@ if __name__ == '__main__':
   bootstrapping.CommandStart('gsutil', component_id='gsutil')
 
   blacklist = {
-      'config': 'To authenticate, run: gcloud auth login',
       'update': 'To update, run: gcloud components update',
   }
 
