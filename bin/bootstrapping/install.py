@@ -89,10 +89,10 @@ def Prompts(usage_reporting):
     """)
       else:
         print("""
-To help improve the quality of this product, we collect anonymized data on how
-the SDK is used. You may choose to opt out of this collection now (by choosing
-'N' at the below prompt), or at any time in the future by running the following
-command:
+To help improve the quality of this product, we collect anonymized usage data
+ and anonymized stacktraces when crashes are encountered.. You may choose to opt
+ out of this collection now (by choosing 'N' at the below prompt), or at any
+ time in the future by running the following command:
     gcloud config set disable_usage_reporting true
 """)
 
