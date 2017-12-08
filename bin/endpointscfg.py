@@ -8,6 +8,7 @@
 import os
 
 import bootstrapping.bootstrapping as bootstrapping
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.updater import update_manager
 
 
@@ -22,6 +23,9 @@ def main():
 
 
 if __name__ == '__main__':
-  bootstrapping.CommandStart('endpointscfg', component_id='core')
-  bootstrapping.CheckUpdates('endpointscfg')
-  main()
+  try:
+    bootstrapping.CommandStart('endpointscfg', component_id='core')
+    bootstrapping.CheckUpdates('endpointscfg')
+    main()
+  except Exception as e:  # pylint: disable=broad-except
+    exceptions.HandleError(e, 'endpointscfg')

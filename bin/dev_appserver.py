@@ -10,6 +10,7 @@ import sys
 
 import bootstrapping.bootstrapping as bootstrapping
 from googlecloudsdk.api_lib.app import wrapper_util
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.updater import update_manager
 
@@ -39,6 +40,9 @@ def main():
 
 
 if __name__ == '__main__':
-  bootstrapping.CommandStart('dev_appserver', component_id='core')
-  bootstrapping.CheckUpdates('dev_appserver')
-  main()
+  try:
+    bootstrapping.CommandStart('dev_appserver', component_id='core')
+    bootstrapping.CheckUpdates('dev_appserver')
+    main()
+  except Exception as e:  # pylint: disable=broad-except
+    exceptions.HandleError(e, 'dev_appserver')

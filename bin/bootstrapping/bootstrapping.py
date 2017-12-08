@@ -46,6 +46,24 @@ def ExecutePythonTool(tool_dir, exec_name, *args):
       execution_utils.ArgsForPythonTool(_FullPath(tool_dir, exec_name), *args))
 
 
+def ExecuteJarTool(java_bin, jar_dir, jar_name, classname, flags=None, *args):
+  """Execute a given jar with the given args and command line.
+
+  Args:
+    java_bin: str, path to the system Java binary
+    jar_dir: str, the directory the jar is located in
+    jar_name: str, file name of the jar under tool_dir
+    classname: str, name of the main class in the jar
+    flags: [str], flags for the java binary
+    *args: args for the command
+  """
+  flags = flags or []
+  jar_path = _FullPath(jar_dir, jar_name)
+  java_args = ['-cp', jar_path] + flags + [classname] + list(args)
+  _ExecuteTool(
+      execution_utils.ArgsForExecutableTool(java_bin, *java_args))
+
+
 def ExecuteShellTool(tool_dir, exec_name, *args):
   """Execute the given bash script with the given args.
 

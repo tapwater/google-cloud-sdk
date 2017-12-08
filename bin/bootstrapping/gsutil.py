@@ -10,6 +10,7 @@ import sys
 
 
 import bootstrapping
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
@@ -86,17 +87,20 @@ def main():
 
 
 if __name__ == '__main__':
-  version = bootstrapping.GetFileContents('platform/gsutil', 'VERSION')
-  bootstrapping.CommandStart('gsutil', version=version)
+  try:
+    version = bootstrapping.GetFileContents('platform/gsutil', 'VERSION')
+    bootstrapping.CommandStart('gsutil', version=version)
 
-  blacklist = {
-      'update': 'To update, run: gcloud components update',
-  }
+    blacklist = {
+        'update': 'To update, run: gcloud components update',
+    }
 
-  bootstrapping.CheckForBlacklistedCommand(sys.argv, blacklist, warn=True,
-                                           die=True)
-  # Don't call bootstrapping.PreRunChecks because anonymous access is
-  # supported for some endpoints. gsutil will output the appropriate
-  # error message upon receiving an authentication error.
-  bootstrapping.CheckUpdates('gsutil')
-  main()
+    bootstrapping.CheckForBlacklistedCommand(sys.argv, blacklist, warn=True,
+                                             die=True)
+    # Don't call bootstrapping.PreRunChecks because anonymous access is
+    # supported for some endpoints. gsutil will output the appropriate
+    # error message upon receiving an authentication error.
+    bootstrapping.CheckUpdates('gsutil')
+    main()
+  except Exception as e:  # pylint: disable=broad-except
+    exceptions.HandleError(e, 'gsutil')

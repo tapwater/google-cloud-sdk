@@ -10,6 +10,7 @@ import sys
 
 import bootstrapping
 
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce
@@ -60,16 +61,19 @@ def main():
 
 
 if __name__ == '__main__':
-  version = bootstrapping.GetFileContents('platform/bq', 'VERSION')
-  bootstrapping.CommandStart('bq', version=version)
-  blacklist = {
-      'init': 'To authenticate, run gcloud auth.',
-  }
-  bootstrapping.CheckForBlacklistedCommand(sys.argv, blacklist,
-                                           warn=True, die=True)
-  cmd_args = [arg for arg in sys.argv[1:] if not arg.startswith('-')]
-  if cmd_args and cmd_args[0] not in ('version', 'help'):
-    # Check for credentials only if they are needed.
-    bootstrapping.CheckCredOrExit()
-  bootstrapping.CheckUpdates('bq')
-  main()
+  try:
+    version = bootstrapping.GetFileContents('platform/bq', 'VERSION')
+    bootstrapping.CommandStart('bq', version=version)
+    blacklist = {
+        'init': 'To authenticate, run gcloud auth.',
+    }
+    bootstrapping.CheckForBlacklistedCommand(sys.argv, blacklist,
+                                             warn=True, die=True)
+    cmd_args = [arg for arg in sys.argv[1:] if not arg.startswith('-')]
+    if cmd_args and cmd_args[0] not in ('version', 'help'):
+      # Check for credentials only if they are needed.
+      bootstrapping.CheckCredOrExit()
+    bootstrapping.CheckUpdates('bq')
+    main()
+  except Exception as e:  # pylint: disable=broad-except
+    exceptions.HandleError(e, 'bq')
