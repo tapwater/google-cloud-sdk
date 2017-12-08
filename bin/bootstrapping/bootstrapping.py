@@ -54,7 +54,8 @@ def ExecuteShellTool(tool_dir, exec_name, *args):
     *args: args for the command
   """
   _ExecuteTool(
-      execution_utils.ArgsForShellTool(_FullPath(tool_dir, exec_name), *args))
+      execution_utils.ArgsForExecutableTool(_FullPath(tool_dir, exec_name),
+                                            *args))
 
 
 def ExecuteCMDTool(tool_dir, exec_name, *args):
