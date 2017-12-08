@@ -16,6 +16,14 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce as c_gce
 
 
+def _MaybeAddBotoOption(args, section, name, value):
+  if value is None:
+    return
+  args.append('-o')
+  args.append('{section}:{name}={value}'.format(
+      section=section, name=name, value=value))
+
+
 def main():
   """Launches gsutil."""
 
@@ -49,11 +57,21 @@ def main():
 
   args = []
 
-  if project:
-    args.extend(['-o', 'GSUtil:default_project_id=%s' % project])
+  _MaybeAddBotoOption(args, 'GSUtil', 'default_project_id', project)
   if pass_credentials and account in c_gce.Metadata().Accounts():
     # Tell gsutil to look for GCE service accounts.
-    args.extend(['-o', 'GoogleCompute:service_account=default'])
+    _MaybeAddBotoOption(args, 'GoogleCompute', 'service_account', 'default')
+
+  proxy_params = properties.VALUES.proxy
+  _MaybeAddBotoOption(args, 'Boto', 'proxy', proxy_params.address.Get())
+  _MaybeAddBotoOption(args, 'Boto', 'proxy_port', proxy_params.port.Get())
+  _MaybeAddBotoOption(args, 'Boto', 'proxy_user', proxy_params.username.Get())
+  _MaybeAddBotoOption(args, 'Boto', 'proxy_pass', proxy_params.password.Get())
+  disable_ssl = properties.VALUES.auth.disable_ssl_validation.GetBool()
+  _MaybeAddBotoOption(args, 'Boto', 'https_validate_certificates',
+                      None if disable_ssl is None else not disable_ssl)
+  _MaybeAddBotoOption(args, 'Boto', 'ca_certificates_file',
+                      properties.VALUES.core.custom_ca_certs_file.Get())
 
   bootstrapping.ExecutePythonTool(
       'platform/gsutil', 'gsutil', *args)
