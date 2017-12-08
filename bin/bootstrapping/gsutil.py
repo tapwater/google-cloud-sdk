@@ -40,9 +40,9 @@ def main():
                     gsutil_path]
       boto_path = os.pathsep.join(path_parts)
 
-      if 'BOTO_CONFIG' in os.environ:
-        del os.environ['BOTO_CONFIG']
-      os.environ['BOTO_PATH'] = boto_path
+    if 'BOTO_CONFIG' in os.environ:
+      del os.environ['BOTO_CONFIG']
+    os.environ['BOTO_PATH'] = boto_path
 
   # Tell gsutil whether gcloud analytics collection is enabled.
   os.environ['GA_CID'] = metrics.GetCIDIfMetricsEnabled()

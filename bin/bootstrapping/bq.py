@@ -19,7 +19,7 @@ def main():
 
   project, account = bootstrapping.GetActiveProjectAndAccount()
   adc_path = config.Paths().LegacyCredentialsAdcPath(account)
-  single_store_path = config.Paths().LegacyCredentialsSingleStorePath(account)
+  single_store_path = config.Paths().LegacyCredentialsBqPath(account)
 
   gce_metadata = gce.Metadata()
   if gce_metadata and account in gce_metadata.Accounts():
