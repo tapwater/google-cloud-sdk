@@ -17,9 +17,11 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import platforms_install
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.gcloud import gcloud
+from googlecloudsdk import gcloud_main
 
 # pylint:disable=superfluous-parens
+
+_CLI = gcloud_main.CreateCLI([])
 
 
 def ParseArgs():
@@ -76,7 +78,7 @@ To help improve the quality of this product, we collect anonymized data on how
 the SDK is used. You may choose to opt out of this collection now (by choosing
 'N' at the below prompt), or at any time in the future by running the following
 command:
-    gcloud config set --scope=user disable_usage_reporting true
+    gcloud config set disable_usage_reporting true
 """)
 
     usage_reporting = console_io.PromptContinue(
@@ -108,8 +110,7 @@ def Install(override_components, additional_components):
 
   # Show the list of components if there were no pre-configured ones.
   if not to_install:
-    # pylint: disable=protected-access
-    gcloud._cli.Execute(['--quiet', 'components', 'list'])
+    _CLI.Execute(['--quiet', 'components', 'list'])
 
 
 def ReInstall(component_ids):
@@ -147,8 +148,7 @@ the Google Cloud Platform.
 """)
 
   verb = 'update' if update else 'install'
-  # pylint: disable=protected-access
-  gcloud._cli.Execute(
+  _CLI.Execute(
       ['--quiet', 'components', verb, '--allow-no-backup'] + component_ids)
 
 

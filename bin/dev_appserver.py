@@ -6,16 +6,19 @@
 """A convenience wrapper for starting dev_appserver for appengine for python."""
 
 import os
+import sys
 
 import bootstrapping.bootstrapping as bootstrapping
-
+from googlecloudsdk.api_lib.app import wrapper_util
 from googlecloudsdk.core.updater import update_manager
 
 
 def main():
   """Launches dev_appserver.py."""
+  runtimes = wrapper_util.GetRuntimes(sys.argv[1:])
+  components = wrapper_util.GetComponents(runtimes)
   update_manager.UpdateManager.EnsureInstalledAndRestart(
-      ['app-engine-java', 'app-engine-python', 'app-engine-php'],
+      components,
       command=__file__)
 
   args = [

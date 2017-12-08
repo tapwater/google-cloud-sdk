@@ -116,4 +116,4 @@ else
   export PYTHONPATH=${CLOUDSDK_LIB_DIR}:${PYTHONPATH}
 fi
 
-"$CLOUDSDK_PYTHON" $CLOUDSDK_PYTHON_ARGS "${CLOUDSDK_ROOT_DIR}/./lib/googlecloudsdk/gcloud/gcloud.py" "$@"
+"$CLOUDSDK_PYTHON" $CLOUDSDK_PYTHON_ARGS "${CLOUDSDK_ROOT_DIR}/./lib/gcloud.py" "$@"
