@@ -14,7 +14,7 @@ import signal
 import subprocess
 import sys
 
-import oauth2client.gce as gce
+import oauth2client.contrib.gce as gce
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import metrics
