@@ -184,7 +184,7 @@ def main():
         Install(pargs.override_components, pargs.additional_components)
 
       platforms_install.UpdateRC(
-          command_completion=pargs.command_completion,
+          completion_update=pargs.command_completion,
           path_update=pargs.path_update,
           rc_path=pargs.rc_path,
           bin_path=bootstrapping.BIN_DIR,
