@@ -192,7 +192,7 @@ def main():
       print("""\
 
 For more information on how to get started, please visit:
-  https://cloud.google.com/sdk/#Getting_Started
+  https://cloud.google.com/sdk/docs/quickstarts
 
 """)
   except exceptions.ToolException as e:
