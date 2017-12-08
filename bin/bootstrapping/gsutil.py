@@ -69,10 +69,13 @@ def main():
     _MaybeAddBotoOption(args, 'GoogleCompute', 'service_account', 'default')
 
   proxy_params = properties.VALUES.proxy
-  _MaybeAddBotoOption(args, 'Boto', 'proxy', proxy_params.address.Get())
-  _MaybeAddBotoOption(args, 'Boto', 'proxy_port', proxy_params.port.Get())
-  _MaybeAddBotoOption(args, 'Boto', 'proxy_user', proxy_params.username.Get())
-  _MaybeAddBotoOption(args, 'Boto', 'proxy_pass', proxy_params.password.Get())
+  proxy_address = proxy_params.address.Get()
+  if proxy_address:
+    _MaybeAddBotoOption(args, 'Boto', 'proxy', proxy_address)
+    _MaybeAddBotoOption(args, 'Boto', 'proxy_port', proxy_params.port.Get())
+    _MaybeAddBotoOption(args, 'Boto', 'proxy_rdns', proxy_params.rdns.GetBool())
+    _MaybeAddBotoOption(args, 'Boto', 'proxy_user', proxy_params.username.Get())
+    _MaybeAddBotoOption(args, 'Boto', 'proxy_pass', proxy_params.password.Get())
   disable_ssl = properties.VALUES.auth.disable_ssl_validation.GetBool()
   _MaybeAddBotoOption(args, 'Boto', 'https_validate_certificates',
                       None if disable_ssl is None else not disable_ssl)
