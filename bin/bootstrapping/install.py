@@ -92,14 +92,19 @@ def Install(override_components, additional_components):
   # components for the SDK.
   to_install = (override_components if override_components is not None
                 else bootstrapping.GetDefaultInstalledComponents())
+
+  # If there are components that are to be installed by default, this means we
+  # are working with an incomplete Cloud SDK package.  This comes from the curl
+  # installer or the Windows installer or downloading a seed directly.  In this
+  # case, we will update to the latest version of the SDK.  If there are no
+  # default components, this is a fully packaged SDK.  If there are additional
+  # components requested, just install them without updating the version.
+  update = bool(to_install)
+
   if additional_components:
     to_install.extend(additional_components)
 
-  print("""
-This will install all the core command line tools necessary for working with
-the Google Cloud Platform.
-""")
-  InstallComponents(to_install)
+  InstallOrUpdateComponents(to_install, update=update)
 
   # Show the list of components if there were no pre-configured ones.
   if not to_install:
@@ -115,14 +120,36 @@ def ReInstall(component_ids):
   """
   to_install = bootstrapping.GetDefaultInstalledComponents()
   to_install.extend(component_ids)
-  InstallComponents(component_ids)
+
+  # We always run in update mode here because we are reinstalling and trying
+  # to get the latest version anyway.
+  InstallOrUpdateComponents(component_ids, update=True)
 
 
-def InstallComponents(component_ids):
-  # Installs the selected configuration or the wrappers for core at a minimum.
+def InstallOrUpdateComponents(component_ids, update):
+  """Installs or updates the given components.
+
+  Args:
+    component_ids: [str], The components to install or update.
+    update: bool, True if we should run update, False to run install.  If there
+      are no components to install, this does nothing unless in update mode (in
+      which case everything gets updated).
+  """
+  # If we are in installation mode, and there are no specific components to
+  # install, there is nothing to do.  If there are no components in update mode
+  # things will still get updated to latest.
+  if not update and not component_ids:
+    return
+
+  print("""
+This will install all the core command line tools necessary for working with
+the Google Cloud Platform.
+""")
+
+  verb = 'update' if update else 'install'
   # pylint: disable=protected-access
   gcloud._cli.Execute(
-      ['--quiet', 'components', 'update', '--allow-no-backup'] + component_ids)
+      ['--quiet', 'components', verb, '--allow-no-backup'] + component_ids)
 
 
 def main():
