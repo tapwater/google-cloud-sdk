@@ -27,6 +27,6 @@ def main():
 
 
 if __name__ == '__main__':
-  bootstrapping.CommandStart('dev_appserver', component_id='app')
+  bootstrapping.CommandStart('dev_appserver', component_id='core')
   bootstrapping.CheckUpdates()
   main()
