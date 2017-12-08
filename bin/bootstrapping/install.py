@@ -12,6 +12,7 @@ import argparse
 import os
 import sys
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import platforms_install
@@ -55,6 +56,14 @@ def ParseArgs():
                       help='Additional components to install by default.  These'
                       ' components will either be added to the default install '
                       'list, or to the override-components (if provided).')
+  # Must have a None default so properties are not always overridden when the
+  # arg is not provided.
+  parser.add_argument('--quiet', '-q', default=None,
+                      action=actions.StoreConstProperty(
+                          properties.VALUES.core.disable_prompts, True),
+                      help='Disable all interactive prompts. If input is '
+                      'required, defaults will be used or an error will be '
+                      'raised')
 
   return parser.parse_args()
 
