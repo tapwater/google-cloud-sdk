@@ -16,15 +16,19 @@ if import_site_packages:
   import site
 
 # Put Cloud SDK libs on the path
-lib_dir = os.path.normpath(os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), '..', '..', 'lib'))
-sys.path = [lib_dir] + sys.path
+root_dir = os.path.normpath(os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), '..', '..'))
+lib_dir = os.path.join(root_dir, 'lib')
+third_party_dir = os.path.join(lib_dir, 'third_party')
+
+sys.path = [lib_dir, third_party_dir] + sys.path
 # Add this so that all subprocess will have this on the path as well
 python_path = os.environ.get('PYTHONPATH')
 if python_path:
-  os.environ['PYTHONPATH'] = os.pathsep.join([lib_dir, python_path])
+  os.environ['PYTHONPATH'] = os.pathsep.join(
+      [lib_dir, third_party_dir, python_path])
 else:
-  os.environ['PYTHONPATH'] = lib_dir
+  os.environ['PYTHONPATH'] = os.pathsep.join([lib_dir, third_party_dir])
 
 
 # This strange import below ensures that the correct 'google' is imported. We
