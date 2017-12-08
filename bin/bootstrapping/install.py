@@ -72,18 +72,23 @@ def Prompts(usage_reporting):
   """Display prompts to opt out of usage reporting.
 
   Args:
-    usage_reporting: bool, If True, enable usage reporting. If None, ask.
+    usage_reporting: bool, If True, enable usage reporting. If None, check
+    the environmental variable. If None, check if its alternate release channel.
+    If not, ask.
   """
 
-  if config.InstallationConfig.Load().IsAlternateReleaseChannel():
-    usage_reporting = True
-    print("""
-Usage reporting is always on for alternate release channels.
-""")
-    return
-
   if usage_reporting is None:
-    print("""
+    if os.environ.get('CLOUDSDK_CORE_DISABLE_USAGE_REPORTING') is not None:
+      usage_reporting = not os.environ.get(
+          'CLOUDSDK_CORE_DISABLE_USAGE_REPORTING')
+    else:
+      if config.InstallationConfig.Load().IsAlternateReleaseChannel():
+        usage_reporting = True
+        print("""
+    Usage reporting is always on for alternate release channels.
+    """)
+      else:
+        print("""
 To help improve the quality of this product, we collect anonymized data on how
 the SDK is used. You may choose to opt out of this collection now (by choosing
 'N' at the below prompt), or at any time in the future by running the following
@@ -91,8 +96,8 @@ command:
     gcloud config set disable_usage_reporting true
 """)
 
-    usage_reporting = console_io.PromptContinue(
-        prompt_string='Do you want to help improve the Google Cloud SDK')
+        usage_reporting = console_io.PromptContinue(
+            prompt_string='Do you want to help improve the Google Cloud SDK')
   properties.PersistProperty(
       properties.VALUES.core.disable_usage_reporting, not usage_reporting,
       scope=properties.Scope.INSTALLATION)
