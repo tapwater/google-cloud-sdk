@@ -62,7 +62,7 @@ _cloudsdk_root_dir() {
 }
 CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
-# Cloud SDK requires python 2 (2.6 or 2.7)
+# Cloud SDK requires python 2.7
 case $CLOUDSDK_PYTHON in
 *python2*)
   ;;

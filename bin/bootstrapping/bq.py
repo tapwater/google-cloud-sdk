@@ -11,7 +11,14 @@ import sys
 import bootstrapping
 
 from googlecloudsdk.core import config
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce
+
+
+def _MaybeAddOption(args, name, value):
+  if value is None:
+    return
+  args.append('--{name}={value}'.format(name=name, value=value))
 
 
 def main():
@@ -36,8 +43,17 @@ def main():
     else:
       args = []  # Don't have any credentials we can pass.
 
-  if project:
-    args += ['--project', project]
+  _MaybeAddOption(args, 'project', project)
+
+  proxy_params = properties.VALUES.proxy
+  _MaybeAddOption(args, 'proxy_address', proxy_params.address.Get())
+  _MaybeAddOption(args, 'proxy_port', proxy_params.port.Get())
+  _MaybeAddOption(args, 'proxy_username', proxy_params.username.Get())
+  _MaybeAddOption(args, 'proxy_password', proxy_params.password.Get())
+  _MaybeAddOption(args, 'disable_ssl_validation',
+                  properties.VALUES.auth.disable_ssl_validation.GetBool())
+  _MaybeAddOption(args, 'ca_certificates_file',
+                  properties.VALUES.core.custom_ca_certs_file .Get())
 
   bootstrapping.ExecutePythonTool(
       'platform/bq', 'bq.py', *args)
@@ -50,6 +66,9 @@ if __name__ == '__main__':
   }
   bootstrapping.CheckForBlacklistedCommand(sys.argv, blacklist,
                                            warn=True, die=True)
-  bootstrapping.CheckCredOrExit(can_be_gce=True)
+  cmd_args = [arg for arg in sys.argv[1:] if not arg.startswith('-')]
+  if cmd_args and cmd_args[0] not in ('version', 'help'):
+    # Check for credentials only if they are needed.
+    bootstrapping.CheckCredOrExit()
   bootstrapping.CheckUpdates('bq')
   main()

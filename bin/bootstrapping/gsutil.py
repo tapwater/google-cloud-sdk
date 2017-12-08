@@ -28,7 +28,9 @@ def main():
   """Launches gsutil."""
 
   project, account = bootstrapping.GetActiveProjectAndAccount()
-  pass_credentials = properties.VALUES.core.pass_credentials_to_gsutil.GetBool()
+  pass_credentials = (
+      properties.VALUES.core.pass_credentials_to_gsutil.GetBool() and
+      not properties.VALUES.auth.disable_credentials.GetBool())
 
   if pass_credentials and account not in c_gce.Metadata().Accounts():
     gsutil_path = config.Paths().LegacyCredentialsGSUtilPath(account)
