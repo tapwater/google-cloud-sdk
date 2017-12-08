@@ -30,20 +30,6 @@ if python_path:
 else:
   os.environ['PYTHONPATH'] = os.pathsep.join([lib_dir, third_party_dir])
 
-
-# This strange import below ensures that the correct 'google' is imported. We
-# reload after sys.path and PYTHONPATH are updated, so we know if will find our
-# google before any other.
-# pylint:disable=g-import-not-at-top, must follow sys.path and PYTHONPATH logic.
-if 'google' in sys.modules:
-  import google
-  if 'reload' in __builtins__:
-    reload(google)
-  else:
-    import imp
-    imp.reload(google)
-
-
 # pylint: disable=g-import-not-at-top
 from googlecloudsdk.core.util import platforms
 
