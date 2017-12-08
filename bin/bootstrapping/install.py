@@ -38,15 +38,23 @@ def ParseArgs():
                       default=None, type=Bool,
                       help='(true/false) Disable anonymous usage reporting.')
   parser.add_argument('--rc-path',
-                      help='Profile to update with PATH and completion.')
+                      help=('Profile to update with PATH and completion. If'
+                            ' given without --command-completion or'
+                            ' --path-update in "quiet" mode, a line will be'
+                            ' added to this profile for both command completion'
+                            ' and path updating.'))
   parser.add_argument('--command-completion', '--bash-completion',
                       default=None, type=Bool,
                       help=('(true/false) Add a line for command completion in'
-                            ' the profile.'))
+                            ' the profile. In "quiet" mode, if True and you do'
+                            ' not provide--rc-path, the default profile'
+                            ' will be updated.'))
   parser.add_argument('--path-update',
                       default=None, type=Bool,
                       help=('(true/false) Add a line for path updating in the'
-                            ' profile.'))
+                            ' profile. In "quiet" mode, if True and you do not'
+                            ' provide --rc-path, the default profile will be'
+                            ' updated.'))
   parser.add_argument('--disable-installation-options', action='store_true',
                       help='DEPRECATED.  This flag is no longer used.')
   parser.add_argument('--override-components', nargs='*',
