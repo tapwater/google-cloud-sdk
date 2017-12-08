@@ -11,6 +11,7 @@ import sys
 
 import bootstrapping
 from googlecloudsdk.core import config
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce as c_gce
 
 
@@ -18,16 +19,18 @@ def main():
   """Launches gsutil."""
 
   project, account = bootstrapping.GetActiveProjectAndAccount()
-
-  if account not in c_gce.Metadata().Accounts():
+  pass_credentials = properties.VALUES.core.pass_credentials_to_gsutil.GetBool()
+  # None means the value was unset, and we want to default to True.
+  if pass_credentials is None:
+    pass_credentials = True
+  if pass_credentials and account not in c_gce.Metadata().Accounts():
     gsutil_path = config.Paths().LegacyCredentialsGSUtilPath(account)
 
-    boto_config = os.environ.get('BOTO_CONFIG', None)
-    boto_path = os.environ.get('BOTO_PATH', None)
+    boto_config = os.environ.get('BOTO_CONFIG', '')
+    boto_path = os.environ.get('BOTO_PATH', '')
 
     # We construct a BOTO_PATH that tacks the refresh token config
     # on the end.
-
     if boto_config:
       boto_path = os.pathsep.join([boto_config, gsutil_path])
     elif boto_path:
@@ -38,15 +41,15 @@ def main():
                     gsutil_path]
       boto_path = os.pathsep.join(path_parts)
 
-    if 'BOTO_CONFIG' in os.environ:
-      del os.environ['BOTO_CONFIG']
-    os.environ['BOTO_PATH'] = boto_path
+      if 'BOTO_CONFIG' in os.environ:
+        del os.environ['BOTO_CONFIG']
+      os.environ['BOTO_PATH'] = boto_path
 
   args = []
 
   if project:
     args.extend(['-o', 'GSUtil:default_project_id=%s' % project])
-  if account in c_gce.Metadata().Accounts():
+  if pass_credentials and account in c_gce.Metadata().Accounts():
     # Tell gsutil to look for GCE service accounts.
     args.extend(['-o', 'GoogleCompute:service_account=default'])
 
