@@ -85,7 +85,8 @@ def _ExecuteTool(args):
   Args:
     args: [str], The args of the command to execute.
   """
-  execution_utils.Exec(args + sys.argv[1:], env=_GetToolEnv())
+  execution_utils.Exec(args + sys.argv[1:], env=_GetToolEnv(),
+                       encode_args_for_output=False)
 
 
 def CheckCredOrExit():
