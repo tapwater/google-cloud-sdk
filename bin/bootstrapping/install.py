@@ -17,6 +17,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import platforms_install
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk import gcloud_main
 
 # pylint:disable=superfluous-parens
@@ -154,6 +155,8 @@ the Google Cloud Platform.
 
 def main():
   pargs = ParseArgs()
+  update_manager.RestartIfUsingBundledPython(sdk_root=config.Paths().sdk_root,
+                                             command=__file__)
   reinstall_components = os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS')
   try:
     if reinstall_components:
