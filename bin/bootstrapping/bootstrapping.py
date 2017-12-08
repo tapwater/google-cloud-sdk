@@ -161,12 +161,15 @@ def CheckForBlacklistedCommand(args, blacklist, warn=True, die=False):
   return blacklisted
 
 
-def CheckUpdates():
+def CheckUpdates(command_path):
   """Check for updates and inform the user.
 
+  Args:
+    command_path: str, The '.' separated path of the command that is currently
+      being run (i.e. gcloud.foo.bar).
   """
   try:
-    update_manager.UpdateManager.PerformUpdateCheck()
+    update_manager.UpdateManager.PerformUpdateCheck(command_path=command_path)
   # pylint:disable=broad-except, We never want this to escape, ever. Only
   # messages printed should reach the user.
   except Exception:
@@ -186,22 +189,6 @@ def CommandStart(command_name, component_id=None):
     version = local_state.InstallationState.VersionForInstalledComponent(
         component_id)
   metrics.Executions(command_name, version)
-
-
-def PrerunChecks(can_be_gce=False):
-  """Call all normal pre-command checks.
-
-  Checks for credentials and updates. If no credentials exist, exit. If there
-  are updates available, inform the user and continue.
-
-  Silent when there are credentials and no updates.
-
-  Args:
-    can_be_gce: bool, True is the credentials may be those provided by the
-        GCE metadata server.
-  """
-  CheckCredOrExit(can_be_gce=can_be_gce)
-  CheckUpdates()
 
 
 def GetActiveProjectAndAccount():

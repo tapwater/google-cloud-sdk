@@ -38,5 +38,6 @@ if __name__ == '__main__':
   }
   bootstrapping.CheckForBlacklistedCommand(sys.argv, blacklist,
                                            warn=True, die=True)
-  bootstrapping.PrerunChecks(can_be_gce=True)
+  bootstrapping.CheckCredOrExit(can_be_gce=True)
+  bootstrapping.CheckUpdates('bq')
   main()

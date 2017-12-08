@@ -67,5 +67,5 @@ if __name__ == '__main__':
   # Don't call bootstrapping.PreRunChecks because anonymous access is
   # supported for some endpoints. gsutil will output the appropriate
   # error message upon receiving an authentication error.
-  bootstrapping.CheckUpdates()
+  bootstrapping.CheckUpdates('gsutil')
   main()
