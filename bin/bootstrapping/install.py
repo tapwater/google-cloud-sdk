@@ -19,6 +19,7 @@ from googlecloudsdk.core import platforms_install
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk import gcloud_main
 
 # pylint:disable=superfluous-parens
@@ -86,9 +87,11 @@ def Prompts(usage_reporting):
   """
 
   if usage_reporting is None:
-    if os.environ.get('CLOUDSDK_CORE_DISABLE_USAGE_REPORTING') is not None:
-      usage_reporting = not os.environ.get(
-          'CLOUDSDK_CORE_DISABLE_USAGE_REPORTING')
+
+    if encoding.GetEncodedValue(
+        os.environ, 'CLOUDSDK_CORE_DISABLE_USAGE_REPORTING') is not None:
+      usage_reporting = not encoding.GetEncodedValue(
+          os.environ, 'CLOUDSDK_CORE_DISABLE_USAGE_REPORTING')
     else:
       if config.InstallationConfig.Load().IsAlternateReleaseChannel():
         usage_reporting = True
@@ -181,7 +184,8 @@ def main():
   pargs = ParseArgs()
   update_manager.RestartIfUsingBundledPython(sdk_root=config.Paths().sdk_root,
                                              command=__file__)
-  reinstall_components = os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS')
+  reinstall_components = encoding.GetEncodedValue(
+      os.environ, 'CLOUDSDK_REINSTALL_COMPONENTS')
   try:
     if reinstall_components:
       ReInstall(reinstall_components.split(','))

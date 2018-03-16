@@ -10,11 +10,8 @@ import setup
 
 import json
 import os
-import signal
-import subprocess
 import sys
 
-import oauth2client.contrib.gce as gce
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import metrics
@@ -22,6 +19,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
 
@@ -91,9 +89,10 @@ def ExecuteCMDTool(tool_dir, exec_name, *args):
 
 def _GetToolEnv():
   env = dict(os.environ)
-  env['CLOUDSDK_WRAPPER'] = '1'
-  env['CLOUDSDK_VERSION'] = config.CLOUD_SDK_VERSION
-  env['CLOUDSDK_PYTHON'] = execution_utils.GetPythonExecutable()
+  encoding.SetEncodedValue(env, 'CLOUDSDK_WRAPPER', '1')
+  encoding.SetEncodedValue(env, 'CLOUDSDK_VERSION', config.CLOUD_SDK_VERSION)
+  encoding.SetEncodedValue(env, 'CLOUDSDK_PYTHON',
+                           execution_utils.GetPythonExecutable())
   return env
 
 
@@ -103,8 +102,7 @@ def _ExecuteTool(args):
   Args:
     args: [str], The args of the command to execute.
   """
-  execution_utils.Exec(args + sys.argv[1:], env=_GetToolEnv(),
-                       encode_args_for_output=False)
+  execution_utils.Exec(args + sys.argv[1:], env=_GetToolEnv())
 
 
 def CheckCredOrExit():

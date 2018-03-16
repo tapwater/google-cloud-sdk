@@ -15,6 +15,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce as c_gce
+from googlecloudsdk.core.util import encoding
 
 
 def _MaybeAddBotoOption(args, section, name, value):
@@ -38,10 +39,11 @@ def main():
 
     # Allow gsutil to only check for the '1' string value, as is done
     # with regard to the 'CLOUDSDK_WRAPPER' environment variable.
-    os.environ['CLOUDSDK_CORE_PASS_CREDENTIALS_TO_GSUTIL'] = '1'
+    encoding.SetEncodedValue(
+        os.environ, 'CLOUDSDK_CORE_PASS_CREDENTIALS_TO_GSUTIL', '1')
 
-    boto_config = os.environ.get('BOTO_CONFIG', '')
-    boto_path = os.environ.get('BOTO_PATH', '')
+    boto_config = encoding.GetEncodedValue(os.environ, 'BOTO_CONFIG', '')
+    boto_path = encoding.GetEncodedValue(os.environ, 'BOTO_PATH', '')
 
     # We construct a BOTO_PATH that tacks the refresh token config
     # on the end.
@@ -55,12 +57,12 @@ def main():
                     gsutil_path]
       boto_path = os.pathsep.join(path_parts)
 
-    if 'BOTO_CONFIG' in os.environ:
-      del os.environ['BOTO_CONFIG']
-    os.environ['BOTO_PATH'] = boto_path
+    encoding.SetEncodedValue(os.environ, 'BOTO_CONFIG', None)
+    encoding.SetEncodedValue(os.environ, 'BOTO_PATH', boto_path)
 
   # Tell gsutil whether gcloud analytics collection is enabled.
-  os.environ['GA_CID'] = metrics.GetCIDIfMetricsEnabled()
+  encoding.SetEncodedValue(
+      os.environ, 'GA_CID', metrics.GetCIDIfMetricsEnabled())
 
   args = []
 

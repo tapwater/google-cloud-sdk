@@ -7,8 +7,11 @@ import os
 import sys
 
 # If we're in a virtualenv, always import site packages. Also, upon request.
-import_site_packages = (os.environ.get('CLOUDSDK_PYTHON_SITEPACKAGES') or
-                        os.environ.get('VIRTUAL_ENV'))
+# We can't import anything from googlecloudsdk here so we are just going to
+# assume no one has done anything as silly as to put any unicode in either of
+# these env vars.
+import_site_packages = (os.environ.get(b'CLOUDSDK_PYTHON_SITEPACKAGES') or
+                        os.environ.get(b'VIRTUAL_ENV'))
 
 if import_site_packages:
   # pylint:disable=unused-import
