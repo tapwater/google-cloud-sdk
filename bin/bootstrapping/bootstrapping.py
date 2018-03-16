@@ -105,15 +105,6 @@ def _ExecuteTool(args):
   execution_utils.Exec(args + sys.argv[1:], env=_GetToolEnv())
 
 
-def CheckCredOrExit():
-  try:
-    c_store.Load()
-  except (c_store.NoActiveAccountException,
-          c_store.NoCredentialsForAccountException) as e:
-    sys.stderr.write(str(e) + '\n\n')
-    sys.exit(1)
-
-
 def GetDefaultInstalledComponents():
   """Gets the list of components to install by default.
 
