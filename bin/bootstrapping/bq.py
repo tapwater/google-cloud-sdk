@@ -5,8 +5,9 @@
 
 """A convenience wrapper for starting bq."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
-import sys
 
 import bootstrapping
 
@@ -30,9 +31,10 @@ def main():
   blacklist = {
       'init': 'To authenticate, run gcloud auth.',
   }
-  bootstrapping.CheckForBlacklistedCommand(sys.argv, blacklist,
+  argv = bootstrapping.GetDecodedArgv()
+  bootstrapping.CheckForBlacklistedCommand(argv, blacklist,
                                            warn=True, die=True)
-  cmd_args = [arg for arg in sys.argv[1:] if not arg.startswith('-')]
+  cmd_args = [arg for arg in argv[1:] if not arg.startswith('-')]
   args = []
   if cmd_args and cmd_args[0] not in ('version', 'help'):
     # Check for credentials only if they are needed.
@@ -77,6 +79,7 @@ def main():
 
 
 if __name__ == '__main__':
+  bootstrapping.DisallowPython3()
   try:
     main()
   except Exception as e:  # pylint: disable=broad-except
