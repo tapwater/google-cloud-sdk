@@ -92,7 +92,7 @@ def main():
 if __name__ == '__main__':
   bootstrapping.DisallowPython3()
   try:
-    version = bootstrapping.GetFileContents('platform/gsutil', 'VERSION')
+    version = bootstrapping.ReadFileContents('platform/gsutil', 'VERSION')
     bootstrapping.CommandStart('gsutil', version=version)
 
     blacklist = {

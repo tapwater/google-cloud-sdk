@@ -253,9 +253,9 @@ def GetActiveProjectAndAccount():
   return (project_name, account)
 
 
-def GetFileContents(*path_parts):
+def ReadFileContents(*path_parts):
   """Returns file content at specified relative path wrt SDK root path."""
-  return files.GetFileContents(os.path.join(SDK_ROOT, *path_parts)).strip()
+  return files.ReadFileContents(os.path.join(SDK_ROOT, *path_parts)).strip()
 
 
 # Register some other sources for credentials and project.
