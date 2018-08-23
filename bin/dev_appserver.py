@@ -22,9 +22,7 @@ def main():
   argv = bootstrapping.GetDecodedArgv()
   runtimes = wrapper_util.GetRuntimes(argv[1:])
   components = wrapper_util.GetComponents(runtimes)
-  options = wrapper_util.ParseDevAppserverFlags(argv[1:])
-  if options.support_datastore_emulator:
-    components.append('cloud-datastore-emulator')
+  components.append('cloud-datastore-emulator')
   update_manager.UpdateManager.EnsureInstalledAndRestart(
       components,
       command=__file__)

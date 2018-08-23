@@ -34,6 +34,7 @@ else:
 import json
 import os
 import sys
+import platform
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
@@ -117,8 +118,11 @@ def ExecuteJavaClass(java_bin,
   main_args = main_args or []
   jar_dir_path = os.path.join(SDK_ROOT, jar_dir, '*')
   main_jar_path = os.path.join(SDK_ROOT, jar_dir, main_jar)
-  java_args = ['-cp', main_jar_path + ':' + jar_dir_path
-              ] + list(java_flags) + [main_class] + list(main_args)
+  classpath = main_jar_path + os.pathsep + jar_dir_path
+  java_args = (['-cp', classpath]
+               + list(java_flags)
+               + [main_class]
+               + list(main_args))
   _ExecuteTool(execution_utils.ArgsForExecutableTool(java_bin, *java_args))
 
 
