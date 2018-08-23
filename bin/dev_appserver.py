@@ -8,10 +8,13 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 import os
+import sys
 
 from bootstrapping import bootstrapping
 from googlecloudsdk.api_lib.app import wrapper_util
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.emulators import datastore_util
+from googlecloudsdk.command_lib.util import java
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import platforms
@@ -21,6 +24,9 @@ def main():
   """Launches dev_appserver.py."""
   argv = bootstrapping.GetDecodedArgv()
   runtimes = wrapper_util.GetRuntimes(argv[1:])
+  options = wrapper_util.ParseDevAppserverFlags(sys.argv[1:])
+  if options.support_datastore_emulator:
+    java.RequireJavaInstalled(datastore_util.DATASTORE_TITLE, min_version=8)
   components = wrapper_util.GetComponents(runtimes)
   components.append('cloud-datastore-emulator')
   update_manager.UpdateManager.EnsureInstalledAndRestart(
