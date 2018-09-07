@@ -46,7 +46,9 @@ def main():
     ])
 
   # Pass the path to cloud datastore emulator to dev_appserver.
-  sdk_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+  # realpath is needed in the case where __file__ is a path containing symlinks.
+  sdk_root = os.path.dirname(
+      os.path.dirname(os.path.abspath(os.path.realpath(__file__))))
   emulator_dir = os.path.join(sdk_root, 'platform', 'cloud-datastore-emulator')
   emulator_script = (
       'cloud_datastore_emulator.cmd' if platforms.OperatingSystem.IsWindows()
