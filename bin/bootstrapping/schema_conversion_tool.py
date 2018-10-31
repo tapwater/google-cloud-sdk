@@ -24,14 +24,21 @@ def main():
   bootstrapping.CheckUpdates(_COMPONENT_ID)
   update_manager.UpdateManager.EnsureInstalledAndRestart(
       [_COMPONENT_ID], command=__file__)
-  java_bin = java.RequireJavaInstalled('Schema Conversion Tool')
+  try:
+    java_bin = java.RequireJavaInstalled('Schema Conversion Tool',
+                                         min_version=9)
+    java_9plus = True
+  except java.JavaVersionError:
+    java_bin = java.RequireJavaInstalled('Schema Conversion Tool',
+                                         min_version=8)
+    java_9plus = False
+
   os.environ.setdefault('SCT_UPDATE_CHECK', 'false')
   jar_name = 'schema_conversion_gui.jar'
   main_jar = os.path.join(_JAR_DIR, jar_name)
 
   # Accept a platform-appropriate default added as 1st arg in sct.sh/sct.cmd.
-  argv = bootstrapping.GetDecodedArgv()[1:]
-  working_dir_default = argv.pop(0)
+  working_dir_default = bootstrapping.GetDecodedArgv()[1]
 
   flags = [
       '-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager',
@@ -42,7 +49,14 @@ def main():
       main_jar,
   ]
 
-  main_args = ['--server.address=127.0.0.1'] + argv
+  if java_9plus:
+    # Open modules to reflection explicitly to avoid Java 9+ warnings.
+    flags = [
+        '--add-opens', 'java.base/java.io=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.net=ALL-UNNAMED',
+        '--add-opens', 'java.rmi/sun.rmi.transport=ALL-UNNAMED',
+    ] + flags
 
   bootstrapping.ExecuteJarTool(
       java_bin,
@@ -50,7 +64,7 @@ def main():
       jar_name,
       None,  # No main classname for Springboot JAR. Use -jar flag instead.
       flags,
-      *main_args)
+      '--server.address=127.0.0.1')
 
 
 if __name__ == '__main__':
