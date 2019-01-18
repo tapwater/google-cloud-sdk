@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import json
+import mimetypes
 import re
 
 from apitools.base.py import encoding
@@ -251,10 +252,8 @@ def FilenameMatchesExtension(filename, extensions):
   return False
 
 
-def IsProtoDescriptor(filename):
-  return FilenameMatchesExtension(
-      filename, ['.pb', '.descriptor', '.proto.bin'])
-
+def IsBinary(filename):
+    return mimetypes.guess_type(filename)[0] == 'application/octet-stream'
 
 def IsRawProto(filename):
   return FilenameMatchesExtension(filename, ['.proto'])
@@ -262,7 +261,7 @@ def IsRawProto(filename):
 
 def ReadServiceConfigFile(file_path):
   try:
-    if IsProtoDescriptor(file_path):
+    if IsBinary(file_path):
       return files.ReadBinaryFileContents(file_path)
     return files.ReadFileContents(file_path)
   except files.Error as ex:
